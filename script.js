@@ -1,62 +1,76 @@
-// Sticky Navbar Scroll Effect
-window.addEventListener('scroll', function() {
+// Header Scroll Effect
+window.addEventListener('scroll', () => {
     const header = document.querySelector('header');
-    if (window.scrollY > 50) {
-        header.style.padding = '0.5rem 0';
-        header.style.boxShadow = '0 4px 20px rgba(0,0,0,0.1)';
+    if (window.scrollY > 100) {
+        header.classList.add('scrolled');
     } else {
-        header.style.padding = '1rem 0';
-        header.style.boxShadow = '0 1px 2px 0 rgba(0,0,0,0.05)';
+        header.classList.remove('scrolled');
     }
 });
 
-// Scroll Reveal Animation (Simple Implementation)
-const observerOptions = {
-    threshold: 0.1
-};
+// Advanced Scroll Reveal Engine
+const revealItems = document.querySelectorAll('.bento-item, .hero-text, .hero-image, .about-text, .stat-box, .contact-form-glass');
 
-const observer = new IntersectionObserver((entries) => {
+const revealOnScroll = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
+            entry.target.style.transform = 'translateY(0) scale(1)';
+            revealOnScroll.unobserve(entry.target);
         }
     });
-}, observerOptions);
+}, { threshold: 0.15 });
 
-document.querySelectorAll('.service-card, .about-content, .hero-text').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(30px)';
-    el.style.transition = 'all 0.8s ease-out';
-    observer.observe(el);
+revealItems.forEach(item => {
+    // Initial state
+    item.style.opacity = '0';
+    item.style.transform = 'translateY(40px) scale(0.98)';
+    item.style.transition = 'all 1.2s cubic-bezier(0.19, 1, 0.22, 1)';
+    revealOnScroll.observe(item);
 });
 
-// Form Submission Handling
-document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+// Staggered Reveal for Bento Grid
+document.querySelectorAll('.bento-item').forEach((item, index) => {
+    item.style.transitionDelay = `${index * 0.15}s`;
+});
+
+// Hero Image Parallax / Hover
+const heroImg = document.getElementById('hero-img');
+if (heroImg) {
+    window.addEventListener('scroll', () => {
+        const speed = 0.1;
+        const yPos = -(window.scrollY * speed);
+        heroImg.style.transform = `translateY(${yPos}px) scale(1)`;
+    });
+}
+
+// Form Handling
+document.getElementById('premiumForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    const btn = this.querySelector('.btn-submit');
+    const btn = this.querySelector('button');
     const originalText = btn.innerText;
     
-    btn.innerText = 'Sending...';
+    btn.innerText = 'SECURELY SENDING...';
+    btn.style.opacity = '0.7';
     btn.disabled = true;
     
-    // Simulate API call
     setTimeout(() => {
-        alert('Thank you for your request! Dr. R. K. Yadav\'s team will contact you shortly.');
+        alert('Confidential Request Received. Dr. Yadav\'s team will contact you within 24 hours.');
         this.reset();
         btn.innerText = originalText;
+        btn.style.opacity = '1';
         btn.disabled = false;
-    }, 1500);
+    }, 2000);
 });
 
-// Smooth Scrolling for Nav Links
+// Smooth Scroll for Nav
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
             window.scrollTo({
-                top: target.offsetTop - 80,
+                top: target.offsetTop - 100,
                 behavior: 'smooth'
             });
         }
